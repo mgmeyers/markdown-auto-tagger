@@ -6,6 +6,7 @@ import os
 import sys
 
 import yake
+import contractions
 
 # Input config
 cwd = sys.argv[1]
@@ -20,9 +21,9 @@ meta_file = os.path.join(meta_destination, title + ".kwds")
 
 # yake config
 language = "en"
-max_ngram_size = 3
-deduplication_thresold = 0.75
-deduplication_algo = "jaro"
+max_ngram_size = 4
+deduplication_thresold = 0.7
+deduplication_algo = "seqm"
 window_size = 1
 
 # Templates
@@ -131,12 +132,20 @@ def process_file():
             features=None,
         )
 
+        expanded = contractions.fix(
+            re.sub(r"[’‘]", "'",
+                   contents)
+        )
+        stripped = re.sub(r"\:", ".", re.sub(r"'s", "", expanded))
+        lines = stripped.splitlines()
+        line_sentences = []
+
         keywords = kw_extractor.extract_keywords(
-            re.sub(r"[’‘]", "'", contents)
+            stripped
         )
 
         tags = [re.sub(strip_punct_re, "", w).replace(" ", "-")
-                for w, score in keywords]
+                for w, score in filter(lambda k: " " in k[0], keywords)]
 
         removed, added = diff_keyword_lists(tags)
 
