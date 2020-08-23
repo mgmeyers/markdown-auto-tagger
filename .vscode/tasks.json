@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Markdown auto-tag",
+      "type": "shell",
+      "command": "python3",
+      "args": [
+        "autotagger.py",
+        "${cwd}",
+        "${file}"
+      ],
+    }
+  ]
+}
